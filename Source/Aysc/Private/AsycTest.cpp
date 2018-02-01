@@ -7,8 +7,14 @@
 
 UAsycTest *UAsycTest::DealData(FString ServerURL, FString UserName, FString Password, ActionType actionType)
 {
-	UAsycTest *Instance = NewObject<UAsycTest>();
-	Instance->DelaDataAction(ServerURL, UserName, Password, actionType);
+	static UAsycTest *Instance = NewObject<UAsycTest>();
+	
+		Instance->DelaDataAction(ServerURL, UserName, Password, actionType);
+		//FString values = Instance->Josnvalues;
+	
+	//values.AsyTest = NewObject<UAsycTest>();
+	//values.JsonValue = Josnvalues;
+
 
 	return Instance;
 
@@ -35,9 +41,11 @@ void UAsycTest::DelaDataAction(FString ServerAddr, FString UserName, FString Pas
     //设置header
 	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json;charset=utf-8"));
 	// *****************绑定请求后的函数（回调函数 ）***返回的信息在回调函数中
-	HttpRequest->OnProcessRequestComplete().BindUObject(this, &UAsycTest::RequestComplete);
+	  HttpRequest->OnProcessRequestComplete().BindUObject(this, &UAsycTest::RequestComplete);
 	//发起请求
 	HttpRequest->ProcessRequest();
+
+
 
 }
 
@@ -47,7 +55,7 @@ void UAsycTest::RequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr Ht
 	if (!bSucceeded)
 	{
 		OnNetError.Broadcast();
-		return;
+		return ;
 	}
 	if (HttpResponse->GetResponseCode() == 200)
 	{
@@ -74,6 +82,7 @@ void UAsycTest::RequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr Ht
 		OnNetError.Broadcast();
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, HttpResponse->GetContentAsString());
-
+	Josnvalues = HttpResponse->GetContentAsString();
+	
 
 }

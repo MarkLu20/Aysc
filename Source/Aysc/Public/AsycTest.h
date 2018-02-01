@@ -16,12 +16,24 @@ enum class ActionType :uint8
 	POST  UMETA(DisplayName="POST"),
 	GET  UMETA(DisplayName="GET")
 };
+USTRUCT(BlueprintType)
+ struct FReTurnValues
+{
+	GENERATED_BODY()
+	
+	//UAsycTest *AsyTest;
+	/*UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	 UAsycTest *AsyTest;*/
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	 FString JsonValue;
+};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMyTestDeleage);
-UCLASS()
+UCLASS(Blueprintable)
 class AYSC_API UAsycTest : public UBlueprintAsyncActionBase
 {
 	GENERATED_BODY()
+
 	
 public :
 	UFUNCTION(BlueprintCallable, Category = "Sanmu", meta = (BlueprintInernetnalUseronly = "true"))
@@ -37,9 +49,15 @@ public :
  
 
 
-
+	UFUNCTION(BlueprintCallable)
 	void DelaDataAction(FString ServerAddr, FString UserName, FString Password, ActionType actionType);
+
+
 	void RequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
+
+	
+public:
+	 FString Josnvalues;
 	
 	
 	
