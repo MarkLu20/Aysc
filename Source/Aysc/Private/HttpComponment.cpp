@@ -41,7 +41,12 @@ void UHttpComponment::RepquestCompelete(FHttpRequestPtr HttpRequest, FHttpRespon
 	this->HttpDelegate.Broadcast(HttpResponse->GetContentAsString());
 }
 
-void UHttpComponment::StartHTTP(FString adress)
+void UHttpComponment::PostRepquestCompelete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded)
+{
+	//UE_LOG(LogTemp, Warning, FString(FString::FromBlob(bSucceeded,32)));
+}
+
+void UHttpComponment::GetHTTP(FString adress)
 {
 
 	GetHTTPData *GetThread;
@@ -59,6 +64,18 @@ void UHttpComponment::StartHTTP(FString adress)
 
 
 	
+}
+
+void UHttpComponment::PostHTTP(FString adress,FString Content)
+
+{
+	PostHTTPData *Thread;
+	Thread = new PostHTTPData(adress, Content);
+	Thread->GetObject(this);
+	Thread->CreateThread(Thread);
+	delete Thread;
+	Thread = NULL;
+
 }
 
 

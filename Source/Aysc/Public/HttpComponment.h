@@ -30,9 +30,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 public:
 	void RepquestCompelete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
+	void PostRepquestCompelete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
 
 	UFUNCTION(BlueprintCallable, Category = "HTTP")
-		void StartHTTP(FString adress);
+		void GetHTTP(FString adress);
+	UFUNCTION(BlueprintCallable, Category = "HTTP")
+		void PostHTTP(FString adress,FString Content);
 	UPROPERTY(BlueprintAssignable, Category = "HTTPDelegate")
 		FGetDataDelegate HttpDelegate;
 	/*UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "HTTP")
@@ -123,3 +126,75 @@ public://线程管理
 	
 
 	};
+class PostHTTPData :public FRunnable
+{ 
+ public:
+	FRunnableThread *ManagerThread;
+	FString  url;
+	FString content;
+	UHttpComponment *Object;
+	
+	~PostHTTPData()
+	{
+		ManagerThread->WaitForCompletion();
+		delete ManagerThread;
+		ManagerThread = NULL;
+
+	
+	
+	
+	
+	}
+	PostHTTPData(FString URL,FString Content)
+	{
+	
+		url = URL;
+		content = Content;
+	
+	}
+
+	virtual bool Init() override
+	{
+		return true;
+	
+	}
+
+
+	// 通过 FRunnable 继承
+	virtual uint32 Run() override
+
+	{
+		TSharedRef<IHttpRequest> PostRequest = FHttpModule::Get().CreateRequest();
+		PostRequest->SetURL(url);
+		PostRequest->SetContentAsString(content);
+		PostRequest->SetVerb(TEXT("POST"));
+		PostRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json;charset=utf-8"));
+		
+		PostRequest->OnProcessRequestComplete().BindUObject(Object, &UHttpComponment::PostRepquestCompelete);
+		PostRequest->ProcessRequest();
+		return 0;
+	
+	
+	}
+	virtual void Exit() override
+	{
+	
+	
+	}
+public:
+	void PostHTTPData::CreateThread(PostHTTPData *Thread)
+	{
+		ManagerThread= FRunnableThread::Create(Thread, TEXT("PostThread"));
+	
+	
+	}
+	void PostHTTPData::GetObject(UHttpComponment *object)
+	{
+	
+		Object = object;
+	
+	
+	
+	}
+
+};
